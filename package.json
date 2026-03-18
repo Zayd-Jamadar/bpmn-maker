@@ -1,0 +1,7 @@
+{
+  "name": "bpmn-maker-tooling",
+  "private": true,
+  "devDependencies": {
+    "bpmnlint": "^11.0.0"
+  }
+}

@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='utf-8'?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" targetNamespace="http://sop-bpmn/process">
+  <process id="Process_1" isExecutable="false">
+    <startEvent id="start_1" name="Process started" />
+    <task id="task_1" name="Receive the new customer application form and supporting identity documents from the front desk." />
+    <task id="task_2" name="Enter the customer details into the KYC screening platform (OmniKYC)." />
+    <task id="task_3" name="Run the automated identity verification check against government ID database." />
+    <task id="task_4" name="Review the OmniKYC verification result." />
+    <exclusiveGateway id="gw_1" name="Check if the KYC verification is complete and passed." gatewayDirection="Diverging" />
+    <task id="task_5" name="mark the customer record as KYC Approved in the core banking system and proceed to step 9." />
+    <task id="task_6" name="generate a KYC deficiency notice and send it to the customer via registered email, requesting the missing documents. Place the application on hold." />
+    <task id="task_7" name="Notify the Relationship Manager assigned to the account that KYC review is complete." />
+    <task id="task_8" name="File all KYC documents in the customer's digital record in the Document Management System (DMS)." />
+    <endEvent id="end_1" name="Process complete" />
+    <sequenceFlow id="flow_1" name="" sourceRef="start_1" targetRef="task_1" />
+    <sequenceFlow id="flow_2" name="" sourceRef="task_1" targetRef="task_2" />
+    <sequenceFlow id="flow_3" name="" sourceRef="task_2" targetRef="task_3" />
+    <sequenceFlow id="flow_4" name="" sourceRef="task_3" targetRef="task_4" />
+    <sequenceFlow id="flow_5" name="" sourceRef="task_4" targetRef="gw_1" />
+    <sequenceFlow id="flow_6" name="Yes" sourceRef="gw_1" targetRef="task_5" />
+    <sequenceFlow id="flow_7" name="No" sourceRef="gw_1" targetRef="task_6" />
+    <sequenceFlow id="flow_8" name="" sourceRef="task_5" targetRef="task_8" />
+    <sequenceFlow id="flow_9" name="" sourceRef="task_6" targetRef="task_7" />
+    <sequenceFlow id="flow_10" name="" sourceRef="task_7" targetRef="task_8" />
+    <sequenceFlow id="flow_11" name="" sourceRef="task_8" targetRef="end_1" />
+  </process>
+  <bpmndi:BPMNDiagram id="Diagram_1">
+    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Shape_start_1" bpmnElement="start_1">
+        <dc:Bounds x="60" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_1" bpmnElement="task_1">
+        <dc:Bounds x="240" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_2" bpmnElement="task_2">
+        <dc:Bounds x="420" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_3" bpmnElement="task_3">
+        <dc:Bounds x="600" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_4" bpmnElement="task_4">
+        <dc:Bounds x="780" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gw_1" bpmnElement="gw_1">
+        <dc:Bounds x="960" y="200" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_5" bpmnElement="task_5">
+        <dc:Bounds x="1140" y="80" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_6" bpmnElement="task_6">
+        <dc:Bounds x="1140" y="320" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_7" bpmnElement="task_7">
+        <dc:Bounds x="1500" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_8" bpmnElement="task_8">
+        <dc:Bounds x="1680" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_1" bpmnElement="end_1">
+        <dc:Bounds x="1860" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flow_1" bpmnElement="flow_1">
+        <bpmndi:waypoint x="180" y="230" />
+        <bpmndi:waypoint x="240" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_2" bpmnElement="flow_2">
+        <bpmndi:waypoint x="360" y="230" />
+        <bpmndi:waypoint x="420" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_3" bpmnElement="flow_3">
+        <bpmndi:waypoint x="540" y="230" />
+        <bpmndi:waypoint x="600" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_4" bpmnElement="flow_4">
+        <bpmndi:waypoint x="720" y="230" />
+        <bpmndi:waypoint x="780" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_5" bpmnElement="flow_5">
+        <bpmndi:waypoint x="900" y="230" />
+        <bpmndi:waypoint x="960" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_6" bpmnElement="flow_6">
+        <bpmndi:waypoint x="1080" y="230" />
+        <bpmndi:waypoint x="1140" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_7" bpmnElement="flow_7">
+        <bpmndi:waypoint x="1080" y="230" />
+        <bpmndi:waypoint x="1140" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_8" bpmnElement="flow_8">
+        <bpmndi:waypoint x="1260" y="110" />
+        <bpmndi:waypoint x="1680" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_9" bpmnElement="flow_9">
+        <bpmndi:waypoint x="1260" y="350" />
+        <bpmndi:waypoint x="1500" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_10" bpmnElement="flow_10">
+        <bpmndi:waypoint x="1620" y="230" />
+        <bpmndi:waypoint x="1680" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_11" bpmnElement="flow_11">
+        <bpmndi:waypoint x="1800" y="230" />
+        <bpmndi:waypoint x="1860" y="230" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

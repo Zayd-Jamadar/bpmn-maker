@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='utf-8'?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" targetNamespace="http://sop-bpmn/process">
+  <process id="Process_1" isExecutable="false">
+    <startEvent id="start_1" name="Process started" />
+    <task id="task_1" name="Receive the wire transfer instruction from the corporate client via the Corporate Banking Portal or authenticated SWIFT MT101 message." />
+    <task id="task_2" name="Validate the transfer instruction format and authenticate the digital signature against the client's registered signing certificate." />
+    <exclusiveGateway id="gw_1" name="Check that sufficient cleared funds are available in the client's nostro account to cover the transfer amount plus applicable fees." gatewayDirection="Diverging" />
+    <task id="task_3" name="send an Insufficient Funds notification to the corporate client and suspend the instruction. Retry this check up to 3 times at 30-minute intervals before escalating to the Relationship Manager." />
+    <task id="task_4" name="hold the transaction and escalate immediately to the Compliance Officer. Do not proceed until cleared." />
+    <task id="task_5" name="release the payment order to the settlement engine." />
+    <task id="task_6" name="Send the final transaction confirmation advice to the corporate client via the Corporate Banking Portal and email." />
+    <task id="task_7" name="Reconcile the settled transaction against the nostro account statement in the reconciliation system." />
+    <endEvent id="end_1" name="Process complete" />
+    <sequenceFlow id="flow_1" name="" sourceRef="start_1" targetRef="task_1" />
+    <sequenceFlow id="flow_2" name="" sourceRef="task_1" targetRef="task_2" />
+    <sequenceFlow id="flow_3" name="" sourceRef="task_2" targetRef="gw_1" />
+    <sequenceFlow id="flow_4" name="Funds are insufficient" sourceRef="gw_1" targetRef="task_3" />
+    <sequenceFlow id="flow_5" name="The compliance check flags any sanctions or AML concerns" sourceRef="gw_1" targetRef="task_4" />
+    <sequenceFlow id="flow_6" name="The compliance check passes" sourceRef="gw_1" targetRef="task_5" />
+    <sequenceFlow id="flow_7" name="" sourceRef="task_3" targetRef="task_6" />
+    <sequenceFlow id="flow_8" name="" sourceRef="task_4" targetRef="task_6" />
+    <sequenceFlow id="flow_9" name="" sourceRef="task_5" targetRef="task_6" />
+    <sequenceFlow id="flow_10" name="" sourceRef="task_6" targetRef="task_7" />
+    <sequenceFlow id="flow_11" name="" sourceRef="task_7" targetRef="end_1" />
+  </process>
+  <bpmndi:BPMNDiagram id="Diagram_1">
+    <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="Shape_start_1" bpmnElement="start_1">
+        <dc:Bounds x="60" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_1" bpmnElement="task_1">
+        <dc:Bounds x="240" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_2" bpmnElement="task_2">
+        <dc:Bounds x="420" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gw_1" bpmnElement="gw_1">
+        <dc:Bounds x="600" y="200" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_3" bpmnElement="task_3">
+        <dc:Bounds x="780" y="80" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_4" bpmnElement="task_4">
+        <dc:Bounds x="780" y="320" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_5" bpmnElement="task_5">
+        <dc:Bounds x="1140" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_6" bpmnElement="task_6">
+        <dc:Bounds x="1320" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_task_7" bpmnElement="task_7">
+        <dc:Bounds x="1500" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_end_1" bpmnElement="end_1">
+        <dc:Bounds x="1680" y="200" width="120" height="60" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_flow_1" bpmnElement="flow_1">
+        <bpmndi:waypoint x="180" y="230" />
+        <bpmndi:waypoint x="240" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_2" bpmnElement="flow_2">
+        <bpmndi:waypoint x="360" y="230" />
+        <bpmndi:waypoint x="420" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_3" bpmnElement="flow_3">
+        <bpmndi:waypoint x="540" y="230" />
+        <bpmndi:waypoint x="600" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_4" bpmnElement="flow_4">
+        <bpmndi:waypoint x="720" y="230" />
+        <bpmndi:waypoint x="780" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_5" bpmnElement="flow_5">
+        <bpmndi:waypoint x="720" y="230" />
+        <bpmndi:waypoint x="780" y="350" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_6" bpmnElement="flow_6">
+        <bpmndi:waypoint x="720" y="230" />
+        <bpmndi:waypoint x="1140" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_7" bpmnElement="flow_7">
+        <bpmndi:waypoint x="900" y="110" />
+        <bpmndi:waypoint x="1320" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_8" bpmnElement="flow_8">
+        <bpmndi:waypoint x="900" y="350" />
+        <bpmndi:waypoint x="1320" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_9" bpmnElement="flow_9">
+        <bpmndi:waypoint x="1260" y="230" />
+        <bpmndi:waypoint x="1320" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_10" bpmnElement="flow_10">
+        <bpmndi:waypoint x="1440" y="230" />
+        <bpmndi:waypoint x="1500" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_11" bpmnElement="flow_11">
+        <bpmndi:waypoint x="1620" y="230" />
+        <bpmndi:waypoint x="1680" y="230" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

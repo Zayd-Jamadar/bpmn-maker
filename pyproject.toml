@@ -1,0 +1,31 @@
+[project]
+name = "bpmn-maker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pip>=26.0.1",
+    "pydantic>=2.12.5",
+    "python-docx>=1.2.0",
+    "ruff>=0.15.6",
+]
+
+[project.scripts]
+bpmn-maker = "bpmn_maker.pipeline:cli"
+bpmn-maker-eval = "eval.run_eval:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+package = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["bpmn_maker", "eval"]
+
+[dependency-groups]
+dev = [
+    "spacy>=3.8.11",
+]
