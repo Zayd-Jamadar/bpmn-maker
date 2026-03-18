@@ -69,7 +69,7 @@ uv run bpmn-maker data/raw/TC-02_single_gateway_kyc.docx out_2.bpmn
 
 Source: `data/raw/TC-02_single_gateway_kyc.docx`
 
-![TC-02 BPMN Diagram](assets/diagram.svg)
+![TC-02 BPMN Diagram](assets/diagram.png)
 
 ## Eval
 
