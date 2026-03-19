@@ -1,6 +1,6 @@
 # BPMN Maker
 
-Simple prototype to convert structured SOP `.docx` files into BPMN 2.0 XML.
+A prototype to convert structured SOP `.docx` files into BPMN 2.0 XML.
 
 ## Approach
 
@@ -15,9 +15,9 @@ This keeps parsing, modeling, and XML generation separate so each part can be ex
 
 Tradeoffs:
 
-- Heuristic parsing is fast and simple, but it is less reliable on messy SOP wording.
-- A lightweight internal model keeps the code easy to extend, but it only supports a small subset of BPMN.
-- The layout is intentionally basic, which keeps generation simple but does not produce polished diagrams.
+- Heuristic parsing is fast, but it is less reliable on messy SOP wording.
+- A lightweight internal model keeps the code easy to extend, but it supports limited set of BPMN.
+- The layout is intentionally basic producing polished diagrams, but may not scale to very complex structures.
 
 ## Architecture
 
