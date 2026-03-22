@@ -86,6 +86,8 @@ def cli() -> None:
                     notes=(lint_result.summary if lint_result else "bpmnlint not available"),
                 )
             )
+            if args.verbose and lint_result and lint_result.output and lint_result.status in {"issues", "warnings", "error"}:
+                _print_verbose_lint(source_path, lint_result)
             if lint_result and lint_result.output:
                 (output_dir / f"{source_path.stem}.lint.txt").write_text(
                     lint_result.output, encoding="utf-8"
@@ -135,6 +137,7 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--timestamp", type=str, default=None)
     parser.add_argument("--no-lint", action="store_true")
+    parser.add_argument("--verbose", action="store_true")
     return parser
 
 
@@ -165,8 +168,13 @@ def _run_lint(path: Path, command: list[str]) -> LintResult:
         problems = int(match.group("problems"))
         errors = int(match.group("errors"))
         warnings = int(match.group("warnings"))
-        status = "clean" if problems == 0 else "issues"
-        summary = f"{problems} problems ({errors} errors, {warnings} warnings)"
+        if errors > 0:
+            status = "issues"
+        elif warnings > 0:
+            status = "warnings"
+        else:
+            status = "clean"
+        summary = _format_lint_summary(errors=errors, warnings=warnings, problems=problems)
         return LintResult(
             status=status,
             problems=problems,
@@ -177,7 +185,7 @@ def _run_lint(path: Path, command: list[str]) -> LintResult:
         )
 
     if proc.returncode == 0:
-        return LintResult(status="clean", summary="0 problems", output=combined_output)
+        return LintResult(status="clean", summary="clean", output=combined_output)
 
     return LintResult(
         status="error",
@@ -198,6 +206,7 @@ def _print_report(
     failed = len(results) - generated
     linted = sum(result.lint_status != "skipped" for result in results)
     lint_issues = sum(result.lint_status == "issues" for result in results)
+    lint_warnings = sum(result.lint_status == "warnings" for result in results)
 
     print(_style("BPMN Maker Eval", _Ansi.BOLD, _Ansi.CYAN, enabled=use_color))
     print(_style("=" * 72, _Ansi.DIM, enabled=use_color))
@@ -231,7 +240,15 @@ def _print_report(
     print()
     print(
         _style(
-            f"Generated: {generated}/{len(results)}  Failed: {failed}  Linted: {linted}  Files with lint issues: {lint_issues}",
+            "  ".join(
+                [
+                    f"Generated: {generated}/{len(results)}",
+                    f"Failed: {failed}",
+                    f"Linted: {linted}",
+                    f"Files with lint issues: {lint_issues}",
+                    f"Files with lint warnings: {lint_warnings}",
+                ]
+            ),
             _Ansi.BOLD,
             enabled=use_color,
         )
@@ -245,6 +262,8 @@ def _colorize_row(line: str, row: list[str], *, enabled: bool) -> str:
     if row[1] == "failed":
         return _style(line, _Ansi.RED, enabled=enabled)
     if row[2] == "issues":
+        return _style(line, _Ansi.RED, enabled=enabled)
+    if row[2] == "warnings":
         return _style(line, _Ansi.YELLOW, enabled=enabled)
     if row[2] == "clean":
         return _style(line, _Ansi.GREEN, enabled=enabled)
@@ -255,6 +274,29 @@ def _style(text: str, *codes: str, enabled: bool) -> str:
     if not enabled or not codes:
         return text
     return f"{''.join(codes)}{text}{_Ansi.RESET}"
+
+
+def _pluralize(word: str, count: int) -> str:
+    return word if count == 1 else f"{word}s"
+
+
+def _format_lint_summary(*, errors: int, warnings: int, problems: int) -> str:
+    if errors and warnings:
+        return f"{errors} {_pluralize('error', errors)}, {warnings} {_pluralize('warning', warnings)}"
+    if errors:
+        return f"{errors} {_pluralize('error', errors)}"
+    if warnings:
+        return f"{warnings} {_pluralize('warning', warnings)}"
+    if problems == 0:
+        return "clean"
+    return f"{problems} {_pluralize('problem', problems)}"
+
+
+def _print_verbose_lint(source_path: Path, lint_result: LintResult) -> None:
+    print()
+    print(f"[lint:{lint_result.status}] {source_path.name}")
+    for line in lint_result.output.splitlines():
+        print(f"  {line}")
 
 
 if __name__ == "__main__":
