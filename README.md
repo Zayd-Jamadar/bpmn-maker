@@ -73,13 +73,19 @@ Source: `data/raw/TC-02_single_gateway_kyc.docx`
 
 ## Eval
 
+Install the BPMN linter dependencies first:
+
+```bash
+npm install
+```
+
 Run the batch evaluation:
 
 ```bash
 uv run bpmn-maker-eval
 ```
 
-This reads from `data/raw` and writes timestamped outputs to `data/prcesseed/<timestamp>/`.
+This reads from `data/raw`, runs `bpmnlint` on each generated diagram when available, and writes timestamped outputs to `data/processed/<timestamp>/`.
 
 ![TC-02 BPMN Diagram](assets/eval.png)
 
