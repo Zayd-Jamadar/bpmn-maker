@@ -1,5 +1,5 @@
 def main():
-    print("Hello from kaigentic!")
+    print("This is the bpmn-maker project!")
 
 
 if __name__ == "__main__":

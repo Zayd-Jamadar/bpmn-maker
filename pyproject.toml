@@ -1,7 +1,7 @@
 [project]
 name = "bpmn-maker"
 version = "0.1.0"
-description = "Add your description here"
+description = "Prototype pipeline to convert SOPs to BPMN 2.0 XML files"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
