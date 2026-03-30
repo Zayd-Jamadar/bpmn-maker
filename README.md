@@ -100,8 +100,8 @@ This reads from `data/raw`, runs `bpmnlint` on each generated diagram when avail
 
 - Add an LLM-based parser to detect decision boundaries, parse messy SOP content, and return a `ProcessModel`.
 - Replace the simple layout engine with a proper Dagre or Graphviz-based layout.
-- Add support for parallel gateways.
+- Add support for complete BPMN specification including parallel gateways.
 - Build a stronger evaluation suite with a human-annotated dataset that spans simple to complex SOPs.
 - Add a storage layer to track existing SOPs and their generated BPMN artifacts.
-- Add a diff engine so incoming SOP revisions can update or replace an existing BPMN graph.
+- Add an update engine so incoming SOP revisions can update or replace an existing BPMN graph.
 - Introduce a task queue with `asyncio` and Redis to parallelize document processing at scale.
