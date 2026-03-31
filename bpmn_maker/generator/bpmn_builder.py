@@ -64,7 +64,14 @@ class BPMNBuilder:
                 proc, f"{{{_NS}}}{tag}", {"id": node.id, "name": node.name}
             )
             if node.type == NodeType.EXCLUSIVE_GATEWAY:
-                el.set("gatewayDirection", "Diverging")
+                gateway_direction = getattr(node, "gateway_direction", None)
+                if gateway_direction is None:
+                    incoming = len(incoming_by_node.get(node.id, []))
+                    outgoing = len(outgoing_by_node.get(node.id, []))
+                    gateway_direction = (
+                        "Converging" if incoming > 1 and outgoing <= 1 else "Diverging"
+                    )
+                el.set("gatewayDirection", gateway_direction)
             if node.type != NodeType.START_EVENT:
                 for flow_id in incoming_by_node.get(node.id, []):
                     incoming = ET.SubElement(el, f"{{{_NS}}}incoming")

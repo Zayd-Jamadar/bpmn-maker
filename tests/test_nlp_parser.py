@@ -1,5 +1,7 @@
 import unittest
 
+from bpmn_maker.generator.bpmn_builder import BPMNBuilder
+from bpmn_maker.generator.layout_engine import LinearLayoutEngine
 from bpmn_maker.parser.nlp_parser import NLPParser
 from bpmn_maker.reader.base import RawDocument
 
@@ -7,6 +9,8 @@ from bpmn_maker.reader.base import RawDocument
 class NLPParserTest(unittest.TestCase):
     def setUp(self) -> None:
         self.parser = NLPParser()
+        self.builder = BPMNBuilder()
+        self.layout_engine = LinearLayoutEngine()
 
     def test_yes_no_gateway_behavior_is_preserved(self) -> None:
         doc = RawDocument(
@@ -29,7 +33,11 @@ class NLPParserTest(unittest.TestCase):
 
         model = self.parser.parse(doc)
         flow_names = {flow.name for flow in model.flows if flow.name}
-        gateway_names = [node.name for node in model.nodes if node.type == "exclusiveGateway"]
+        gateway_names = [
+            node.name
+            for node in model.nodes
+            if node.type == "exclusiveGateway" and node.name
+        ]
 
         self.assertIn("Check if the KYC verification is complete and passed.", gateway_names)
         self.assertEqual({"Yes", "No"}, flow_names)
@@ -57,7 +65,11 @@ class NLPParserTest(unittest.TestCase):
 
         model = self.parser.parse(doc)
 
-        gateway_names = [node.name for node in model.nodes if node.type == "exclusiveGateway"]
+        gateway_names = [
+            node.name
+            for node in model.nodes
+            if node.type == "exclusiveGateway" and node.name
+        ]
         flow_names = [flow.name for flow in model.flows if flow.name]
         node_names = [node.name for node in model.nodes]
 
@@ -126,6 +138,89 @@ class NLPParserTest(unittest.TestCase):
                 flow.source_ref == cleared.id and flow.target_ref == notification.id
                 for flow in model.flows
             )
+        )
+
+    def test_common_branch_target_creates_explicit_converging_gateway(self) -> None:
+        doc = RawDocument(
+            paragraphs=[
+                "1. Purpose",
+                "Test reconverging branch output.",
+                "2. Procedure Steps",
+                "3. Receive the new customer application form and supporting identity documents from the front desk.",
+                "4. Review the OmniKYC verification result.",
+                "5. Check if the KYC verification is complete and passed.",
+                "6. If yes, mark the customer record as KYC Approved in the core banking system and proceed to step 8.",
+                "7. If no, generate a KYC deficiency notice and send it to the customer via registered email, requesting the missing documents and proceed to step 8.",
+                "8. File all KYC documents in the customer's digital record in the Document Management System (DMS).",
+            ],
+            metadata={},
+        )
+
+        model = self.parser.parse(doc)
+        file_task = next(
+            node
+            for node in model.nodes
+            if node.name
+            == "File all KYC documents in the customer's digital record in the Document Management System (DMS)."
+        )
+        merge_gateways = [
+            node
+            for node in model.nodes
+            if node.type == "exclusiveGateway"
+            and getattr(node, "gateway_direction", None) == "Converging"
+        ]
+
+        self.assertEqual(1, len(merge_gateways))
+        merge_gateway = merge_gateways[0]
+        self.assertEqual(
+            1, sum(1 for flow in model.flows if flow.target_ref == file_task.id)
+        )
+        self.assertTrue(
+            any(
+                flow.source_ref == merge_gateway.id and flow.target_ref == file_task.id
+                for flow in model.flows
+            )
+        )
+
+        xml = self.builder.build(model, self.layout_engine.compute(model))
+        self.assertIn('gatewayDirection="Converging"', xml)
+
+    def test_branches_that_rejoin_after_intermediate_task_create_merge_gateway(self) -> None:
+        doc = RawDocument(
+            paragraphs=[
+                "1. Purpose",
+                "Test delayed reconvergence.",
+                "2. Procedure Steps",
+                "Receive the new customer application form and supporting identity documents from the front desk.",
+                "Enter the customer details into the KYC screening platform (OmniKYC).",
+                "Run the automated identity verification check against government ID database.",
+                "Review the OmniKYC verification result.",
+                "Check if the KYC verification is complete and passed.",
+                "If yes, mark the customer record as KYC Approved in the core banking system and proceed to step 9.",
+                "If no, generate a KYC deficiency notice and send it to the customer via registered email, requesting the missing documents. Place the application on hold.",
+                "Notify the Relationship Manager assigned to the account that KYC review is complete.",
+                "File all KYC documents in the customer's digital record in the Document Management System (DMS).",
+            ],
+            metadata={},
+        )
+
+        model = self.parser.parse(doc)
+        file_task = next(
+            node
+            for node in model.nodes
+            if node.name
+            == "File all KYC documents in the customer's digital record in the Document Management System (DMS)."
+        )
+        merge_gateways = [
+            node
+            for node in model.nodes
+            if node.type == "exclusiveGateway"
+            and getattr(node, "gateway_direction", None) == "Converging"
+        ]
+
+        self.assertEqual(1, len(merge_gateways))
+        self.assertEqual(
+            1, sum(1 for flow in model.flows if flow.target_ref == file_task.id)
         )
 
 

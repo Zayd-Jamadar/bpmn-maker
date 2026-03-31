@@ -1,6 +1,7 @@
 import re
 from dataclasses import dataclass
 
+from .base import ISOPParser
 from ..reader.base import RawDocument
 from ..models.process_model import (
     ProcessModel,
@@ -41,7 +42,7 @@ _ROLE_ACTION_RE = re.compile(
 )
 
 
-class NLPParser:
+class NLPParser(ISOPParser):
     """
     Converts a RawDocument into a ProcessModel using section-aware heuristics.
 
@@ -74,6 +75,37 @@ class NLPParser:
                 node = Task(id=id_seq.next("task"), name=step.name)
             nodes.append(node)
             nodes_by_index[step.index] = node
+
+        merge_targets_by_step: dict[int, str] = {}
+        merge_flows: list[tuple[str, int]] = []
+        for step in steps:
+            if step.kind != "gateway":
+                continue
+            branch_steps = self._find_branch_steps(steps, step.index)
+            if len(branch_steps) < 2:
+                continue
+
+            branches_by_target: dict[int, list[int]] = {}
+            for branch_step in branch_steps:
+                merge_plan = self._find_branch_merge_plan(branch_step, steps)
+                if merge_plan is None:
+                    continue
+                exit_index, target_index = merge_plan
+                branches_by_target.setdefault(target_index, []).append(exit_index)
+
+            for target_index, exit_indices in branches_by_target.items():
+                if len(exit_indices) < 2:
+                    continue
+                merge_gateway = ExclusiveGateway(
+                    id=id_seq.next("gw"),
+                    name="",
+                    gateway_direction="Converging",
+                )
+                target_node = nodes_by_index[target_index]
+                nodes.insert(nodes.index(target_node), merge_gateway)
+                for exit_index in exit_indices:
+                    merge_targets_by_step[exit_index] = merge_gateway.id
+                merge_flows.append((merge_gateway.id, target_index))
 
         if steps:
             flows.append(
@@ -115,6 +147,16 @@ class NLPParser:
                             name=branch_step.branch_label,
                         )
                     )
+                continue
+
+            if merge_target := merge_targets_by_step.get(step.index):
+                flows.append(
+                    SequenceFlow(
+                        id=id_seq.next("flow"),
+                        source_ref=node.id,
+                        target_ref=merge_target,
+                    )
+                )
                 continue
 
             if step.kind == "branch":
@@ -160,6 +202,15 @@ class NLPParser:
                         target_ref=end.id,
                     )
                 )
+
+        for merge_gateway_id, target_index in merge_flows:
+            flows.append(
+                SequenceFlow(
+                    id=id_seq.next("flow"),
+                    source_ref=merge_gateway_id,
+                    target_ref=nodes_by_index[target_index].id,
+                )
+            )
 
         nodes.append(end)
 
@@ -327,6 +378,36 @@ class NLPParser:
         if step.terminal_hold:
             return None
         return self._find_next_mainline_step(steps, step.index)
+
+    def _find_branch_merge_plan(
+        self, branch_step: "_Step", steps: list["_Step"]
+    ) -> tuple[int, int] | None:
+        immediate_target = self._resolve_branch_target(branch_step, steps)
+        if immediate_target is None:
+            return None
+        path = [branch_step.index]
+        current_index = immediate_target
+        seen = {branch_step.index}
+
+        while True:
+            if current_index in seen:
+                return path[-1], current_index
+            seen.add(current_index)
+            path.append(current_index)
+
+            current_step = steps[current_index]
+            if current_step.kind in {"gateway", "branch"}:
+                return path[-2], current_index
+
+            next_index = self._find_next_mainline_step(steps, current_index)
+            if next_index is None:
+                return path[-2], current_index
+
+            next_step = steps[next_index]
+            if next_step.kind in {"gateway", "branch"}:
+                return path[-1], next_index
+
+            current_index = next_index
 
     def _resolve_step_reference(self, step_number: int, steps: list["_Step"]) -> int | None:
         numbered_match = next(

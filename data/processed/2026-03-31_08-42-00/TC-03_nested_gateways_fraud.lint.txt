@@ -1,0 +1,5 @@
+/home/zayd/projects/temp/bpmn-maker/data/processed/2026-03-31_08-42-00/TC-03_nested_gateways_fraud.bpmn
+  task_8  warning  Incoming flows do not join                                  fake-join          
+  gw_3    warning  Gateway is superfluous. It only has one source and target.  superfluous-gateway
+
+✖ 2 problems (0 errors, 2 warnings)

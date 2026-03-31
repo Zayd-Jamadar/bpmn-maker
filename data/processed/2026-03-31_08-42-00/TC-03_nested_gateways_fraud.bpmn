@@ -48,8 +48,12 @@
       <incoming>flow_12</incoming>
       <outgoing>flow_13</outgoing>
     </task>
-    <task id="task_9" name="Update the transaction status in the core banking system and close the screening record.">
+    <exclusiveGateway id="gw_3" name="" gatewayDirection="Converging">
       <incoming>flow_13</incoming>
+      <outgoing>flow_15</outgoing>
+    </exclusiveGateway>
+    <task id="task_9" name="Update the transaction status in the core banking system and close the screening record.">
+      <incoming>flow_15</incoming>
       <outgoing>flow_14</outgoing>
     </task>
     <endEvent id="end_1" name="Process complete">
@@ -67,8 +71,9 @@
     <sequenceFlow id="flow_10" name="The risk level is Low" sourceRef="gw_2" targetRef="task_7" />
     <sequenceFlow id="flow_11" name="" sourceRef="task_6" targetRef="task_8" />
     <sequenceFlow id="flow_12" name="" sourceRef="task_7" targetRef="task_8" />
-    <sequenceFlow id="flow_13" name="" sourceRef="task_8" targetRef="task_9" />
+    <sequenceFlow id="flow_13" name="" sourceRef="task_8" targetRef="gw_3" />
     <sequenceFlow id="flow_14" name="" sourceRef="task_9" targetRef="end_1" />
+    <sequenceFlow id="flow_15" name="" sourceRef="gw_3" targetRef="task_9" />
   </process>
   <bpmndi:BPMNDiagram id="Diagram_1">
     <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_1">
@@ -105,11 +110,14 @@
       <bpmndi:BPMNShape id="Shape_task_8" bpmnElement="task_8">
         <dc:Bounds x="1860" y="200" width="140" height="70" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gw_3" bpmnElement="gw_3">
+        <dc:Bounds x="2040" y="200" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_task_9" bpmnElement="task_9">
-        <dc:Bounds x="2040" y="200" width="140" height="70" />
+        <dc:Bounds x="2220" y="200" width="140" height="70" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_end_1" bpmnElement="end_1">
-        <dc:Bounds x="2220" y="217" width="36" height="36" />
+        <dc:Bounds x="2400" y="217" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_flow_1" bpmnElement="flow_1">
         <di:waypoint x="96" y="235" />
@@ -161,10 +169,14 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flow_13" bpmnElement="flow_13">
         <di:waypoint x="2000" y="235" />
-        <di:waypoint x="2040" y="235" />
+        <di:waypoint x="2040" y="225" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flow_14" bpmnElement="flow_14">
-        <di:waypoint x="2180" y="235" />
+        <di:waypoint x="2360" y="235" />
+        <di:waypoint x="2400" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_15" bpmnElement="flow_15">
+        <di:waypoint x="2090" y="225" />
         <di:waypoint x="2220" y="235" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

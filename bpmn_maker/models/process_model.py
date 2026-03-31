@@ -36,6 +36,7 @@ class ExclusiveGateway(BPMNNode):
     type: NodeType = NodeType.EXCLUSIVE_GATEWAY
     yes_ref: str | None = None  # ID of the Task on the "yes" branch
     no_ref: str | None = None  # ID of the Task on the "no" branch
+    gateway_direction: str | None = None
 
 
 # ── Edges ─────────────────────────────────────────────────────────────────────

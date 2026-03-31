@@ -37,9 +37,13 @@
       <incoming>flow_9</incoming>
       <outgoing>flow_10</outgoing>
     </task>
-    <task id="task_8" name="File all KYC documents in the customer's digital record in the Document Management System (DMS).">
+    <exclusiveGateway id="gw_2" name="" gatewayDirection="Converging">
       <incoming>flow_8</incoming>
       <incoming>flow_10</incoming>
+      <outgoing>flow_12</outgoing>
+    </exclusiveGateway>
+    <task id="task_8" name="File all KYC documents in the customer's digital record in the Document Management System (DMS).">
+      <incoming>flow_12</incoming>
       <outgoing>flow_11</outgoing>
     </task>
     <endEvent id="end_1" name="Process complete">
@@ -52,10 +56,11 @@
     <sequenceFlow id="flow_5" name="" sourceRef="task_4" targetRef="gw_1" />
     <sequenceFlow id="flow_6" name="Yes" sourceRef="gw_1" targetRef="task_5" />
     <sequenceFlow id="flow_7" name="No" sourceRef="gw_1" targetRef="task_6" />
-    <sequenceFlow id="flow_8" name="" sourceRef="task_5" targetRef="task_8" />
+    <sequenceFlow id="flow_8" name="" sourceRef="task_5" targetRef="gw_2" />
     <sequenceFlow id="flow_9" name="" sourceRef="task_6" targetRef="task_7" />
-    <sequenceFlow id="flow_10" name="" sourceRef="task_7" targetRef="task_8" />
+    <sequenceFlow id="flow_10" name="" sourceRef="task_7" targetRef="gw_2" />
     <sequenceFlow id="flow_11" name="" sourceRef="task_8" targetRef="end_1" />
+    <sequenceFlow id="flow_12" name="" sourceRef="gw_2" targetRef="task_8" />
   </process>
   <bpmndi:BPMNDiagram id="Diagram_1">
     <bpmndi:BPMNPlane id="Plane_1" bpmnElement="Process_1">
@@ -86,11 +91,14 @@
       <bpmndi:BPMNShape id="Shape_task_7" bpmnElement="task_7">
         <dc:Bounds x="1500" y="200" width="140" height="70" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_gw_2" bpmnElement="gw_2">
+        <dc:Bounds x="1680" y="200" width="50" height="50" />
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_task_8" bpmnElement="task_8">
-        <dc:Bounds x="1680" y="200" width="140" height="70" />
+        <dc:Bounds x="1860" y="200" width="140" height="70" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Shape_end_1" bpmnElement="end_1">
-        <dc:Bounds x="1860" y="217" width="36" height="36" />
+        <dc:Bounds x="2040" y="217" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Edge_flow_1" bpmnElement="flow_1">
         <di:waypoint x="96" y="235" />
@@ -122,7 +130,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flow_8" bpmnElement="flow_8">
         <di:waypoint x="1280" y="115" />
-        <di:waypoint x="1680" y="235" />
+        <di:waypoint x="1680" y="225" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flow_9" bpmnElement="flow_9">
         <di:waypoint x="1280" y="355" />
@@ -130,10 +138,14 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flow_10" bpmnElement="flow_10">
         <di:waypoint x="1640" y="235" />
-        <di:waypoint x="1680" y="235" />
+        <di:waypoint x="1680" y="225" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Edge_flow_11" bpmnElement="flow_11">
-        <di:waypoint x="1820" y="235" />
+        <di:waypoint x="2000" y="235" />
+        <di:waypoint x="2040" y="235" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_flow_12" bpmnElement="flow_12">
+        <di:waypoint x="1730" y="225" />
         <di:waypoint x="1860" y="235" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>

@@ -1,4 +1,0 @@
-/home/zayd/projects/temp/bpmn-maker/data/processed/2026-03-22_18-45-10/TC-03_nested_gateways_fraud.bpmn
-  task_8  warning  Incoming flows do not join  fake-join
-
-✖ 1 problem (0 errors, 1 warning)
